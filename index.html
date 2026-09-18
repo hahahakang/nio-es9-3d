@@ -39,6 +39,13 @@ html,body{overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"PingFang
 .sl::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);top:2px;left:2px;transition:transform .2s}
 .sl.on::after{transform:translateX(18px)}
 .ht{position:fixed;bottom:200px;left:50%;transform:translateX(-50%);color:rgba(26,29,38,.35);font-size:12px;z-index:50;pointer-events:none;text-align:center}
+
+@media(max-width:400px){
+ .ob{padding:7px 10px;font-size:12px}
+ .s{width:32px;height:32px}
+ .ph2 .cn{font-size:14px}
+ .cp{padding:12px 14px calc(env(safe-area-inset-bottom,0px) + 12px)}
+}
 </style>
 </head>
 <body>
@@ -79,6 +86,7 @@ const scene=new THREE.Scene();
 scene.background=new THREE.Color(0xeff0f2);
 const camera=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,.1,100);
 camera.position.set(-4.5,2.4,6.6);
+if(innerWidth/innerHeight<0.75){const k=1.18;camera.position.multiplyScalar(k);}
 const renderer=new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(innerWidth,innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
