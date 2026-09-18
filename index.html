@@ -171,10 +171,10 @@ loader.load('es9.glb',(gltf)=>{
 
 // Sticker positions
 const sPos={
- rear:{p:[0,.95,-2.74],r:[0,Math.PI,0],w:.7},
- hood:{p:[0,1.5,1.5],r:[-Math.PI/2.3,0,0],w:.55},
- left:{p:[-1.04,.85,.2],r:[0,-Math.PI/2,0],w:.65},
- right:{p:[1.04,.85,.2],r:[0,Math.PI/2,0],w:.65}
+ rear:{p:[0,.95,2.72],r:[0,0,0],w:.7},
+ hood:{p:[0,1.5,-1.5],r:[Math.PI/2.3,0,Math.PI],w:.55},
+ left:{p:[1.04,.85,.2],r:[0,Math.PI/2,0],w:.65},
+ right:{p:[-1.04,.85,.2],r:[0,-Math.PI/2,0],w:.65}
 };
 function setSticker(k){
  if(!sticker)return;
