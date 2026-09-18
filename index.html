@@ -108,16 +108,16 @@ const floor=new THREE.Mesh(new THREE.CircleGeometry(15,64),
 floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
 
 // Materials
-const paintMat=new THREE.MeshPhysicalMaterial({color:COLORS.green.h,metalness:.8,roughness:.18,clearcoat:1,clearcoatRoughness:.03,envMapIntensity:1.3});
-const blackMat=new THREE.MeshStandardMaterial({color:0x0a0a0c,roughness:.7,metalness:.2});
-const chromeMat=new THREE.MeshStandardMaterial({color:0xd0d0d0,metalness:1,roughness:.12});
-const glassMat=new THREE.MeshPhysicalMaterial({color:0x0c1018,metalness:.9,roughness:.05,envMapIntensity:2,transparent:true,opacity:.75});
-const lightMat=new THREE.MeshStandardMaterial({color:0xe8e8f0,metalness:.3,roughness:.2,emissive:0xffffff,emissiveIntensity:.3});
-const tireMat=new THREE.MeshStandardMaterial({color:0x0a0a0a,roughness:.95});
-const rimMat=new THREE.MeshStandardMaterial({color:0x888890,metalness:.9,roughness:.25});
-const caliperMat=new THREE.MeshStandardMaterial({color:0xc81e1e,metalness:.6,roughness:.3});
-const detailMat=new THREE.MeshStandardMaterial({color:0x666670,metalness:.8,roughness:.3});
-const mirrorMat=new THREE.MeshStandardMaterial({color:0x18181c,roughness:.5,metalness:.3});
+const paintMat=new THREE.MeshPhysicalMaterial({color:COLORS.green.h,metalness:.8,roughness:.18,clearcoat:1,clearcoatRoughness:.03,envMapIntensity:1.3,side:THREE.DoubleSide});
+const blackMat=new THREE.MeshStandardMaterial({color:0x0a0a0c,roughness:.7,metalness:.2,side:THREE.DoubleSide});
+const chromeMat=new THREE.MeshStandardMaterial({color:0xd0d0d0,metalness:1,roughness:.12,side:THREE.DoubleSide});
+const glassMat=new THREE.MeshPhysicalMaterial({color:0x0c1018,metalness:.9,roughness:.05,envMapIntensity:2,transparent:true,opacity:.75,side:THREE.DoubleSide});
+const lightMat=new THREE.MeshStandardMaterial({color:0xe8e8f0,metalness:.3,roughness:.2,emissive:0xffffff,emissiveIntensity:.3,side:THREE.DoubleSide});
+const tireMat=new THREE.MeshStandardMaterial({color:0x0a0a0a,roughness:.95,side:THREE.DoubleSide});
+const rimMat=new THREE.MeshStandardMaterial({color:0x888890,metalness:.9,roughness:.25,side:THREE.DoubleSide});
+const caliperMat=new THREE.MeshStandardMaterial({color:0xc81e1e,metalness:.6,roughness:.3,side:THREE.DoubleSide});
+const detailMat=new THREE.MeshStandardMaterial({color:0x666670,metalness:.8,roughness:.3,side:THREE.DoubleSide});
+const mirrorMat=new THREE.MeshStandardMaterial({color:0x18181c,roughness:.5,metalness:.3,side:THREE.DoubleSide});
 
 const matMap={paint:paintMat,black:blackMat,chrome:chromeMat,glass:glassMat,
  lights:lightMat,mirror:mirrorMat,details:detailMat,rim:rimMat,tire:tireMat,caliper:caliperMat};
