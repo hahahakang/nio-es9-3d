@@ -78,7 +78,7 @@ const container=document.getElementById('c');
 const scene=new THREE.Scene();
 scene.background=new THREE.Color(0x0a0b14);
 const camera=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,.1,100);
-camera.position.set(4.5,2.5,6);
+camera.position.set(-4.5,2.5,6.5);
 const renderer=new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(innerWidth,innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
@@ -153,11 +153,10 @@ loader.load('es9.glb',(gltf)=>{
    }
   }
  });
- root.rotation.y=Math.PI;
  scene.add(root);
 
  sticker=new THREE.Mesh(new THREE.PlaneGeometry(1,1),stickerMat);
- scene.add(sticker);
+ root.add(sticker);
  setSticker('rear');
  document.getElementById('ld').style.display='none';
 },(xhr)=>{
@@ -172,10 +171,10 @@ loader.load('es9.glb',(gltf)=>{
 
 // Sticker positions
 const sPos={
- rear:{p:[0,.95,-2.72],r:[0,Math.PI,0],w:.7},
- hood:{p:[0,1.45,1.8],r:[-Math.PI/2.5,0,0],w:.55},
- left:{p:[1.03,.85,.3],r:[0,Math.PI/2,0],w:.65},
- right:{p:[-1.03,.85,.3],r:[0,-Math.PI/2,0],w:.65}
+ rear:{p:[0,.95,-2.74],r:[0,Math.PI,0],w:.7},
+ hood:{p:[0,1.5,1.5],r:[-Math.PI/2.3,0,0],w:.55},
+ left:{p:[-1.04,.85,.2],r:[0,-Math.PI/2,0],w:.65},
+ right:{p:[1.04,.85,.2],r:[0,Math.PI/2,0],w:.65}
 };
 function setSticker(k){
  if(!sticker)return;
