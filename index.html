@@ -4,306 +4,217 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>蔚来 ES9 行政签名版 6座</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body {
-    overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: #0a0b14;
-    width: 100%; height: 100%;
-    touch-action: none;
-  }
-  #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
-  #canvas-container canvas { display: block; }
-  .loading {
-    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    color: #4a9eff; font-size: 16px; z-index: 200; text-align: center;
-  }
-  .loading .spinner {
-    width: 36px; height: 36px; border: 3px solid rgba(74,158,255,0.2);
-    border-top-color: #4a9eff; border-radius: 50%;
-    margin: 0 auto 12px; animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .top-bar {
-    position: fixed; top: 0; left: 0; right: 0;
-    padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px;
-    z-index: 100; background: linear-gradient(to bottom, rgba(10,11,20,0.85), transparent);
-    pointer-events: none;
-  }
-  .top-bar .title { color: #fff; font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-  .top-bar .badge { background: rgba(74,158,255,0.2); color: #4a9eff; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; }
-  .control-panel {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: rgba(15,17,30,0.92); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border-radius: 20px 20px 0 0; z-index: 100;
-    padding: 16px 20px calc(env(safe-area-inset-bottom, 0px) + 16px);
-    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-    border-top: 1px solid rgba(255,255,255,0.08);
-  }
-  .control-panel.collapsed { transform: translateY(calc(100% - 48px)); }
-  .panel-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 12px; }
-  .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-  .panel-header .label { font-size: 13px; color: #8892b0; }
-  .panel-header .color-name { font-size: 15px; color: #4a9eff; font-weight: 600; }
-  .row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
-  .row:last-child { margin-bottom: 0; }
-  .swatches { display: flex; gap: 8px; flex: 1; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 4px 0; }
-  .swatches::-webkit-scrollbar { display: none; }
-  .swatch { width: 34px; height: 34px; border-radius: 50%; cursor: pointer; flex-shrink: 0; border: 2px solid transparent; transition: transform 0.15s, border-color 0.15s; }
-  .swatch:active { transform: scale(0.9); }
-  .swatch.active { border-color: #fff; box-shadow: 0 0 0 2px rgba(74,158,255,0.4); }
-  .sticker-opts { display: flex; gap: 8px; flex: 1; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .sticker-opts::-webkit-scrollbar { display: none; }
-  .opt-btn { padding: 8px 14px; border-radius: 20px; background: rgba(255,255,255,0.08); color: #ccc; font-size: 13px; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; cursor: pointer; transition: all 0.15s; }
-  .opt-btn.active { background: rgba(74,158,255,0.2); color: #4a9eff; border-color: rgba(74,158,255,0.4); }
-  .toggle-row { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08); }
-  .toggle-row span { font-size: 14px; color: #ccc; }
-  .switch { width: 44px; height: 26px; background: rgba(255,255,255,0.15); border-radius: 13px; cursor: pointer; position: relative; transition: background 0.2s; }
-  .switch.on { background: #4a9eff; }
-  .switch::after { content: ''; position: absolute; width: 22px; height: 22px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: transform 0.2s; }
-  .switch.on::after { transform: translateX(18px); }
-  .hint { position: fixed; bottom: 210px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.35); font-size: 12px; z-index: 50; pointer-events: none; text-align: center; transition: bottom 0.3s; }
-  .control-panel.collapsed ~ .hint { bottom: 30px; }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#0a0b14;width:100%;height:100%;touch-action:none}
+#c{position:fixed;top:0;left:0;width:100%;height:100%}
+#c canvas{display:block}
+.ld{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#4a9eff;font-size:15px;z-index:200;text-align:center}
+.sp{width:32px;height:32px;border:3px solid rgba(74,158,255,.2);border-top-color:#4a9eff;border-radius:50%;margin:0 auto 10px;animation:r .8s linear infinite}
+@keyframes r{to{transform:rotate(360deg)}}
+.tb{position:fixed;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 12px;z-index:100;background:linear-gradient(to bottom,rgba(10,11,20,.85),transparent);pointer-events:none}
+.tb .t{color:#fff;font-size:17px;font-weight:600;display:flex;align-items:center;gap:8px}
+.tb .b{background:rgba(74,158,255,.2);color:#4a9eff;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500}
+.cp{position:fixed;bottom:0;left:0;right:0;background:rgba(15,17,30,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:20px 20px 0 0;z-index:100;padding:14px 18px calc(env(safe-area-inset-bottom,0px) + 14px);transition:transform .3s cubic-bezier(.4,0,.2,1);border-top:1px solid rgba(255,255,255,.08)}
+.cp.off{transform:translateY(calc(100% - 44px))}
+.ph{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 10px}
+.ph2{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.ph2 .l{font-size:13px;color:#8892b0}
+.ph2 .cn{font-size:15px;color:#4a9eff;font-weight:600}
+.rw{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.sw{display:flex;gap:8px;flex:1;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px 0}
+.sw::-webkit-scrollbar{display:none}
+.s{width:34px;height:34px;border-radius:50%;cursor:pointer;flex-shrink:0;border:2px solid transparent;transition:transform .15s,border-color .15s}
+.s:active{transform:scale(.9)}
+.s.on{border-color:#fff;box-shadow:0 0 0 2px rgba(74,158,255,.4)}
+.so{display:flex;gap:8px;flex:1;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.so::-webkit-scrollbar{display:none}
+.ob{padding:8px 14px;border-radius:20px;background:rgba(255,255,255,.08);color:#ccc;font-size:13px;border:1px solid transparent;white-space:nowrap;flex-shrink:0;cursor:pointer;transition:all .15s}
+.ob.on{background:rgba(74,158,255,.2);color:#4a9eff;border-color:rgba(74,158,255,.4)}
+.tr{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)}
+.tr span{font-size:14px;color:#ccc}
+.sl{width:44px;height:26px;background:rgba(255,255,255,.15);border-radius:13px;cursor:pointer;position:relative;transition:background .2s}
+.sl.on{background:#4a9eff}
+.sl::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform .2s}
+.sl.on::after{transform:translateX(18px)}
+.ht{position:fixed;bottom:200px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.3);font-size:12px;z-index:50;pointer-events:none;text-align:center}
 </style>
 </head>
 <body>
-<div id="canvas-container"></div>
-<div class="loading" id="loading"><div class="spinner"></div>正在加载 ES9 3D模型...</div>
-<div class="top-bar"><div class="title">蔚来 ES9 <span class="badge">行政签名版 6座</span></div></div>
-<div class="hint">单指拖动旋转 · 双指缩放</div>
-<div class="control-panel" id="controlPanel">
-  <div class="panel-handle" id="panelHandle"></div>
-  <div class="panel-header"><span class="label">车身颜色</span><span class="color-name" id="colorName">星辰绿</span></div>
-  <div class="row"><div class="swatches" id="swatches"></div></div>
-  <div class="row"><div class="sticker-opts" id="stickerOpts">
-    <div class="opt-btn active" data-pos="rear">车尾门</div>
-    <div class="opt-btn" data-pos="hood">引擎盖</div>
-    <div class="opt-btn" data-pos="left">左车门</div>
-    <div class="opt-btn" data-pos="right">右车门</div>
-    <div class="opt-btn" data-pos="none">无贴纸</div>
-  </div></div>
-  <div class="toggle-row"><span>自动旋转</span><div class="switch on" id="autoRotateSwitch"></div></div>
+<div id="c"></div>
+<div class="ld" id="ld"><div class="sp"></div><div id="ldt">正在加载 ES9 3D模型...</div></div>
+<div class="tb"><div class="t">蔚来 ES9 <span class="b">行政签名版 6座</span></div></div>
+<div class="ht">单指拖动旋转 · 双指缩放</div>
+<div class="cp" id="cp">
+<div class="ph" id="ph"></div>
+<div class="ph2"><span class="l">车身颜色</span><span class="cn" id="cn">星辰绿</span></div>
+<div class="rw"><div class="sw" id="sw"></div></div>
+<div class="rw"><div class="so" id="so">
+<div class="ob on" data-p="rear">车尾门</div>
+<div class="ob" data-p="hood">引擎盖</div>
+<div class="ob" data-p="left">左车门</div>
+<div class="ob" data-p="right">右车门</div>
+<div class="ob" data-p="none">无贴纸</div>
+</div></div>
+<div class="tr"><span>自动旋转</span><div class="sl on" id="ar"></div></div>
 </div>
+
 <script type="importmap">
-{ "imports": {
-  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-}}
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
 </script>
 <script type="module">
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
-const CAR_COLORS = {
-  stellargreen: { name: '星辰绿',    hex: 0x2d4f42 },
-  moonsilver:   { name: '月辉银',    hex: 0xb0b4b8 },
-  cloudwhite:   { name: '云白',      hex: 0xf0f1f3 },
-  arcticblack:  { name: '极夜黑',    hex: 0x111316 },
-  snowgold:     { name: '晨晖金',    hex: 0xc2a878 },
-  nebularred:   { name: 'M42星云红', hex: 0x7a1e2e },
-  southernstar: { name: '南极星蓝',  hex: 0x1e4d7c },
+const COLORS={
+ green:{n:'星辰绿',h:0x2d4f42},silver:{n:'月辉银',h:0xb0b4b8},white:{n:'云白',h:0xf0f1f3},
+ black:{n:'极夜黑',h:0x111316},gold:{n:'晨晖金',h:0xc2a878},red:{n:'M42星云红',h:0x7a1e2e},blue:{n:'南极星蓝',h:0x1e4d7c}
 };
 
-const container = document.getElementById('canvas-container');
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0b14);
-
-const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(4.5, 2.5, 6);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
+const container=document.getElementById('c');
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0a0b14);
+const camera=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,.1,100);
+camera.position.set(4.5,2.5,6);
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.1;
 container.appendChild(renderer.domElement);
 
-const pmrem = new THREE.PMREMGenerator(renderer);
-scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const pmrem=new THREE.PMREMGenerator(renderer);
+scene.environment=pmrem.fromScene(new RoomEnvironment(),.04).texture;
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; controls.dampingFactor = 0.06;
-controls.target.set(0, 0.8, 0);
-controls.minDistance = 3; controls.maxDistance = 15;
-controls.maxPolarAngle = Math.PI * 0.9; controls.minPolarAngle = 0.05;
-controls.autoRotate = true; controls.autoRotateSpeed = 1.5;
-controls.enablePan = false;
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;controls.dampingFactor=.06;
+controls.target.set(0,.8,0);controls.minDistance=3;controls.maxDistance=15;
+controls.maxPolarAngle=Math.PI*.9;controls.minPolarAngle=.05;
+controls.autoRotate=true;controls.autoRotateSpeed=1.5;controls.enablePan=false;
 
-const key = new THREE.DirectionalLight(0xffffff, 3);
-key.position.set(5, 8, 4); key.castShadow = true;
-key.shadow.mapSize.set(2048, 2048);
-key.shadow.camera.left = -5; key.shadow.camera.right = 5;
-key.shadow.camera.top = 5; key.shadow.camera.bottom = -5;
-key.shadow.bias = -0.0003;
-scene.add(key);
-const fill = new THREE.DirectionalLight(0x8899bb, 0.8); fill.position.set(-5, 3, -5); scene.add(fill);
-const rim = new THREE.DirectionalLight(0xffffff, 1.5); rim.position.set(0, 5, -8); scene.add(rim);
-scene.add(new THREE.AmbientLight(0x303040, 0.6));
+const dl=new THREE.DirectionalLight(0xffffff,3);dl.position.set(5,8,4);dl.castShadow=true;
+dl.shadow.mapSize.set(2048,2048);dl.shadow.camera.left=-5;dl.shadow.camera.right=5;
+dl.shadow.camera.top=5;dl.shadow.camera.bottom=-5;scene.add(dl);
+scene.add(new THREE.DirectionalLight(0x8899bb,.8)).position.set(-5,3,-5);
+const rl=new THREE.DirectionalLight(0xffffff,1.5);rl.position.set(0,5,-8);scene.add(rl);
+scene.add(new THREE.AmbientLight(0x303040,.6));
 
-const floor = new THREE.Mesh(
-  new THREE.CircleGeometry(15, 64),
-  new THREE.MeshStandardMaterial({ color: 0x151625, roughness: 0.85, metalness: 0.1 })
-);
-floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const floor=new THREE.Mesh(new THREE.CircleGeometry(15,64),
+ new THREE.MeshStandardMaterial({color:0x151625,roughness:.85}));
+floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
 
-let sticker = null;
-const stickerTex = new THREE.TextureLoader().load('sticker.png');
-stickerTex.colorSpace = THREE.SRGBColorSpace;
-const stickerMat = new THREE.MeshStandardMaterial({
-  map: stickerTex, transparent: true, roughness: 0.4, metalness: 0,
-  polygonOffset: true, polygonOffsetFactor: -2,
-});
+// Materials
+const paintMat=new THREE.MeshPhysicalMaterial({color:COLORS.green.h,metalness:.8,roughness:.18,clearcoat:1,clearcoatRoughness:.03,envMapIntensity:1.3});
+const blackMat=new THREE.MeshStandardMaterial({color:0x0a0a0c,roughness:.7,metalness:.2});
+const chromeMat=new THREE.MeshStandardMaterial({color:0xd0d0d0,metalness:1,roughness:.12});
+const glassMat=new THREE.MeshPhysicalMaterial({color:0x0c1018,metalness:.9,roughness:.05,envMapIntensity:2,transparent:true,opacity:.75});
+const lightMat=new THREE.MeshStandardMaterial({color:0xe8e8f0,metalness:.3,roughness:.2,emissive:0xffffff,emissiveIntensity:.3});
+const tireMat=new THREE.MeshStandardMaterial({color:0x0a0a0a,roughness:.95});
+const rimMat=new THREE.MeshStandardMaterial({color:0x888890,metalness:.9,roughness:.25});
+const caliperMat=new THREE.MeshStandardMaterial({color:0xc81e1e,metalness:.6,roughness:.3});
+const detailMat=new THREE.MeshStandardMaterial({color:0x666670,metalness:.8,roughness:.3});
+const mirrorMat=new THREE.MeshStandardMaterial({color:0x18181c,roughness:.5,metalness:.3});
 
-const gltfLoader = new GLTFLoader();
-let paintMeshes = [];
+const matMap={paint:paintMat,black:blackMat,chrome:chromeMat,glass:glassMat,
+ lights:lightMat,mirror:mirrorMat,details:detailMat,rim:rimMat,tire:tireMat,caliper:caliperMat};
 
-gltfLoader.load('es9.glb', (gltf) => {
-  const carModel = gltf.scene;
-  
-  carModel.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true;
-      child.receiveShadow = true;
-      if (child.material && child.material.color) {
-        const c = child.material.color;
-        const r = c.r, g = c.g, b = c.b;
-        
-        // 车身漆面 (我们导出时是 [0.8,0.8,0.8])
-        if (r > 0.7 && g > 0.7 && b > 0.7 && Math.abs(r-g) < 0.08 && Math.abs(g-b) < 0.08) {
-          const paintMat = new THREE.MeshPhysicalMaterial({
-            color: CAR_COLORS.stellargreen.hex,
-            metalness: 0.8, roughness: 0.18,
-            clearcoat: 1.0, clearcoatRoughness: 0.03,
-            envMapIntensity: 1.3,
-          });
-          child.material = paintMat;
-          paintMeshes.push(child);
-        }
-        // 轮胎
-        else if (r < 0.08 && g < 0.08 && b < 0.08) {
-          child.material = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.95 });
-        }
-        // 黑色塑料
-        else if (r < 0.15 && g < 0.15 && b < 0.15) {
-          child.material = new THREE.MeshStandardMaterial({ color: 0x0a0a0c, roughness: 0.7, metalness: 0.2 });
-        }
-        // 镀铬
-        else if (r > 0.7 && g > 0.7 && b >= 0.75) {
-          child.material = new THREE.MeshStandardMaterial({ color: 0xd0d0d0, metalness: 1.0, roughness: 0.12 });
-        }
-        // 玻璃
-        else if (r < 0.3 && g < 0.4 && b < 0.45 && r <= g && g <= b) {
-          child.material = new THREE.MeshPhysicalMaterial({
-            color: 0x0c1018, metalness: 0.9, roughness: 0.05, envMapIntensity: 2.0,
-            transparent: true, opacity: 0.8
-          });
-        }
-      }
-    }
-  });
-  
-  carModel.rotation.y = Math.PI;
-  scene.add(carModel);
-  
-  sticker = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), stickerMat);
-  scene.add(sticker);
-  setSticker('rear');
-  
-  document.getElementById('loading').style.display = 'none';
-}, (progress) => {
-  if (progress.total) {
-    const pct = Math.round(progress.loaded / progress.total * 100);
-    document.getElementById('loading').innerHTML = `<div class="spinner"></div>正在加载 ES9 3D模型... ${pct}%`;
+// Sticker
+let sticker=null;
+const stickerTex=new THREE.TextureLoader().load('sticker.png');
+stickerTex.colorSpace=THREE.SRGBColorSpace;
+const stickerMat=new THREE.MeshStandardMaterial({map:stickerTex,transparent:true,roughness:.4,metalness:0,polygonOffset:true,polygonOffsetFactor:-2});
+
+// Load GLB
+const loader=new GLTFLoader();
+loader.load('es9.glb',(gltf)=>{
+ const root=gltf.scene;
+ root.traverse(child=>{
+  if(!child.isMesh)return;
+  child.castShadow=true;child.receiveShadow=true;
+  // Find material by node/mesh name
+  let name=(child.name||'').toLowerCase();
+  let assigned=false;
+  for(const[key,mat]of Object.entries(matMap)){
+   if(name.includes(key)){child.material=mat;assigned=true;break;}
   }
-}, (error) => {
-  console.error('Model load error:', error);
-  document.getElementById('loading').innerHTML = '模型加载失败，请刷新重试';
-});
-
-// 贴纸位置 (X=左右, Y=上下, Z=前后; 车尾在 Z≈-2.7, 车头在 Z≈2.6)
-const stickerPositions = {
-  rear:  { pos: [0, 0.95, -2.72], rot: [0, Math.PI, 0], w: 0.7 },
-  hood:  { pos: [0, 1.45, 1.8], rot: [-Math.PI/2.5, 0, 0], w: 0.55 },
-  left:  { pos: [1.03, 0.85, 0.3], rot: [0, Math.PI/2, 0], w: 0.65 },
-  right: { pos: [-1.03, 0.85, 0.3], rot: [0, -Math.PI/2, 0], w: 0.65 },
-};
-
-function setSticker(key) {
-  if (!sticker) return;
-  if (key === 'none') { sticker.visible = false; return; }
-  const p = stickerPositions[key];
-  sticker.visible = true;
-  sticker.position.set(...p.pos);
-  sticker.rotation.set(...p.rot);
-  sticker.scale.set(p.w, p.w * 1280/1707, 1);
-}
-
-const colorNameEl = document.getElementById('colorName');
-const swatchesEl = document.getElementById('swatches');
-const stickerOpts = document.getElementById('stickerOpts');
-const autoRotateSwitch = document.getElementById('autoRotateSwitch');
-const controlPanel = document.getElementById('controlPanel');
-const panelHandle = document.getElementById('panelHandle');
-
-Object.entries(CAR_COLORS).forEach(([key, val]) => {
-  const sw = document.createElement('div');
-  sw.className = 'swatch' + (key === 'stellargreen' ? ' active' : '');
-  sw.style.background = `#${val.hex.toString(16).padStart(6,'0')}`;
-  sw.title = val.name; sw.dataset.color = key;
-  sw.addEventListener('click', () => {
-    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-    sw.classList.add('active');
-    updateColor(key);
-  });
-  swatchesEl.appendChild(sw);
-});
-
-function updateColor(key) {
-  const c = CAR_COLORS[key];
-  paintMeshes.forEach(mesh => {
-    if (mesh.material && mesh.material.color) {
-      mesh.material.color.setHex(c.hex);
+  if(!assigned){
+   // Fallback: check parent name
+   let p=child.parent;
+   while(p){
+    let pn=(p.name||'').toLowerCase();
+    for(const[key,mat]of Object.entries(matMap)){
+     if(pn.includes(key)){child.material=mat;assigned=true;break;}
     }
-  });
-  colorNameEl.textContent = c.name;
-}
+    if(assigned)break;p=p.parent;
+   }
+  }
+ });
+ root.rotation.y=Math.PI;
+ scene.add(root);
 
-stickerOpts.querySelectorAll('.opt-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    stickerOpts.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    setSticker(btn.dataset.pos);
-  });
+ sticker=new THREE.Mesh(new THREE.PlaneGeometry(1,1),stickerMat);
+ scene.add(sticker);
+ setSticker('rear');
+ document.getElementById('ld').style.display='none';
+},(xhr)=>{
+ if(xhr.total){
+  const pct=Math.min(100,Math.round(xhr.loaded/xhr.total*100));
+  document.getElementById('ldt').textContent=`正在加载 ES9 3D模型... ${pct}%`;
+ }
+},(err)=>{
+ console.error('GLB load error:',err);
+ document.getElementById('ld').innerHTML='<div style="color:#ff6b6b">模型加载失败<br><span style="font-size:12px;color:#888">请刷新页面重试</span></div>';
 });
 
-autoRotateSwitch.addEventListener('click', () => {
-  autoRotateSwitch.classList.toggle('on');
-  controls.autoRotate = autoRotateSwitch.classList.contains('on');
+// Sticker positions
+const sPos={
+ rear:{p:[0,.95,-2.72],r:[0,Math.PI,0],w:.7},
+ hood:{p:[0,1.45,1.8],r:[-Math.PI/2.5,0,0],w:.55},
+ left:{p:[1.03,.85,.3],r:[0,Math.PI/2,0],w:.65},
+ right:{p:[-1.03,.85,.3],r:[0,-Math.PI/2,0],w:.65}
+};
+function setSticker(k){
+ if(!sticker)return;
+ if(k==='none'){sticker.visible=false;return;}
+ const s=sPos[k];sticker.visible=true;
+ sticker.position.set(...s.p);sticker.rotation.set(...s.r);
+ sticker.scale.set(s.w,s.w*1280/1707,1);
+}
+
+// UI
+const cnEl=document.getElementById('cn');
+Object.entries(COLORS).forEach(([key,v],i)=>{
+ const d=document.createElement('div');
+ d.className='s'+(i===0?' on':'');
+ d.style.background='#'+v.h.toString(16).padStart(6,'0');
+ d.onclick=()=>{
+  document.querySelectorAll('.s').forEach(x=>x.classList.remove('on'));
+  d.classList.add('on');
+  paintMat.color.setHex(v.h);
+  cnEl.textContent=v.n;
+ };
+ document.getElementById('sw').appendChild(d);
+});
+document.querySelectorAll('.ob').forEach(b=>{
+ b.onclick=()=>{
+  document.querySelectorAll('.ob').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');setSticker(b.dataset.p);
+ };
+});
+const arEl=document.getElementById('ar');
+arEl.onclick=()=>{arEl.classList.toggle('on');controls.autoRotate=arEl.classList.contains('on');};
+document.getElementById('ph').onclick=()=>document.getElementById('cp').classList.toggle('off');
+
+addEventListener('resize',()=>{
+ camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
 });
 
-panelHandle.addEventListener('click', () => controlPanel.classList.toggle('collapsed'));
-
-function onResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-}
-window.addEventListener('resize', onResize);
-window.addEventListener('orientationchange', () => setTimeout(onResize, 100));
-
-(function animate() {
-  requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
-})();
+(function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);})();
 </script>
 </body>
 </html>
