@@ -125,10 +125,14 @@ const matMap={paint:paintMat,black:blackMat,chrome:chromeMat,glass:glassMat,
  lights:lightMat,mirror:mirrorMat,details:detailMat,rim:rimMat,tire:tireMat,caliper:caliperMat};
 
 // Sticker
-let sticker=null;
-const stickerTex=new THREE.TextureLoader().load('sticker.png');
+let sticker=null, stickerAspect=459/1483;
+const stickerTex=new THREE.TextureLoader().load('sticker.png',(t)=>{
+ stickerAspect=t.image.height/t.image.width;
+ if(sticker) sticker.scale.y=sticker.scale.x*stickerAspect;
+});
 stickerTex.colorSpace=THREE.SRGBColorSpace;
-const stickerMat=new THREE.MeshStandardMaterial({map:stickerTex,transparent:true,roughness:.4,metalness:0,polygonOffset:true,polygonOffsetFactor:-2});
+stickerTex.anisotropy=8;
+const stickerMat=new THREE.MeshStandardMaterial({map:stickerTex,transparent:true,roughness:.35,metalness:0,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3});
 
 // Load GLB
 const loader=new GLTFLoader();
@@ -183,7 +187,7 @@ function setSticker(k){
  if(k==='none'){sticker.visible=false;return;}
  const s=sPos[k];sticker.visible=true;
  sticker.position.set(...s.p);sticker.rotation.set(...s.r);
- sticker.scale.set(s.w,s.w*620/1500,1);
+ sticker.scale.set(s.w,s.w*stickerAspect,1);
 }
 
 // UI
