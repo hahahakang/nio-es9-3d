@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>蔚来 ES9 行政签名版 6座 - 3D定制展示</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #1a1a2e; }
+  #canvas-container { width: 100vw; height: 100vh; }
+
+  .ui-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(20, 22, 35, 0.88);
+    backdrop-filter: blur(16px);
+    border-radius: 16px;
+    padding: 24px;
+    color: #fff;
+    min-width: 280px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    z-index: 100;
+  }
+  .ui-panel h1 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+  .ui-panel .subtitle {
+    font-size: 12px;
+    color: #8892b0;
+    margin-bottom: 20px;
+  }
+  .control-group { margin-bottom: 18px; }
+  .control-group label {
+    display: block;
+    font-size: 12px;
+    color: #8892b0;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .control-group select {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238892b0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  .control-group select:hover { background-color: rgba(255,255,255,0.1); }
+  .control-group select option { background: #1a1a2e; color: #fff; }
+
+  .color-swatches {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch.active { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,0.3); }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .toggle-row label { font-size: 13px; color: #ccd; }
+  .toggle-row input[type="checkbox"] {
+    width: 40px;
+    height: 22px;
+    appearance: none;
+    background: rgba(255,255,255,0.15);
+    border-radius: 11px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    outline: none;
+  }
+  .toggle-row input[type="checkbox"]:checked { background: #4a9eff; }
+  .toggle-row input[type="checkbox"]::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s;
+  }
+  .toggle-row input[type="checkbox"]:checked::after { transform: translateX(18px); }
+
+  .color-name-display {
+    font-size: 14px;
+    color: #4a9eff;
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  .hint {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    text-align: center;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(74,158,255,0.15);
+    color: #4a9eff;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+<div id="canvas-container"></div>
+
+<div class="ui-panel">
+  <h1>蔚来 ES9 <span class="badge">行政签名版 6座</span></h1>
+  <div class="subtitle">3D 定制预览 · Duffy and Friends 联名贴纸</div>
+
+  <div class="control-group">
+    <label>车身颜色</label>
+    <select id="colorSelect">
+      <option value="stellargreen">星辰绿 Nebula Green</option>
+      <option value="moonsilver">月辉银 New Moon Silver</option>
+      <option value="cloudwhite">云白 Cloud White</option>
+      <option value="arcticblack">极夜黑 Arctic Black</option>
+      <option value="snowgold">晨晖金 Snow Peak Gold</option>
+      <option value="nebularred">M42 星云红 Nebula Red</option>
+      <option value="southernstar">南极星蓝 Southern Star</option>
+    </select>
+    <div class="color-swatches" id="swatches"></div>
+    <div class="color-name-display" id="colorName">星辰绿</div>
+  </div>
+
+  <div class="control-group">
+    <label>卡通贴纸位置</label>
+    <select id="stickerSelect">
+      <option value="rear">车尾门</option>
+      <option value="hood">引擎盖</option>
+      <option value="left">左侧车门</option>
+      <option value="right">右侧车门</option>
+      <option value="none">不显示贴纸</option>
+    </select>
+  </div>
+
+  <div class="toggle-row">
+    <label>自动旋转</label>
+    <input type="checkbox" id="autoRotate" checked>
+  </div>
+</div>
+
+<div class="hint">左键拖动旋转 · 滚轮缩放 · 右键平移</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+// ===== NIO ES9 Official Colors (近似官方色值) =====
+const CAR_COLORS = {
+  cloudwhite:   { name: '云白',       hex: 0xe8e9ec, metalness: 0.3, roughness: 0.25, clearcoat: 0.9 },
+  arcticblack:  { name: '极夜黑',     hex: 0x16181c, metalness: 0.8, roughness: 0.2,  clearcoat: 1.0 },
+  snowgold:     { name: '晨晖金',     hex: 0xc2ad7a, metalness: 0.7, roughness: 0.28, clearcoat: 0.9 },
+  nebularred:   { name: 'M42星云红',  hex: 0x7a1f2e, metalness: 0.7, roughness: 0.25, clearcoat: 1.0 },
+  moonsilver:   { name: '月辉银',     hex: 0xb0b4b9, metalness: 0.8, roughness: 0.22, clearcoat: 0.9 },
+  southernstar: { name: '南极星蓝',   hex: 0x1e4d7b, metalness: 0.7, roughness: 0.25, clearcoat: 1.0 },
+  stellargreen: { name: '星辰绿',     hex: 0x3a5a48, metalness: 0.7, roughness: 0.25, clearcoat: 1.0 },
+};
+
+// ===== Scene Setup =====
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0f1020);
+scene.fog = new THREE.Fog(0x0f1020, 15, 40);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.set(6, 3, 8);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+container.appendChild(renderer.domElement);
+
+// Environment
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+
+// Controls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.target.set(0, 0.8, 0);
+controls.minDistance = 4;
+controls.maxDistance = 18;
+controls.maxPolarAngle = Math.PI * 0.85; // allow looking from above but not below floor
+controls.minPolarAngle = 0.1; // allow looking from near-top
+controls.autoRotate = true;
+controls.autoRotateSpeed = 1.5;
+
+// ===== Lighting =====
+const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+keyLight.position.set(5, 8, 5);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.set(2048, 2048);
+keyLight.shadow.camera.left = -6;
+keyLight.shadow.camera.right = 6;
+keyLight.shadow.camera.top = 6;
+keyLight.shadow.camera.bottom = -6;
+keyLight.shadow.bias = -0.0005;
+scene.add(keyLight);
+
+const fillLight = new THREE.DirectionalLight(0x8899ff, 0.6);
+fillLight.position.set(-5, 3, -5);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xffffff, 1.0);
+rimLight.position.set(0, 6, -8);
+scene.add(rimLight);
+
+const ambient = new THREE.AmbientLight(0x404060, 0.5);
+scene.add(ambient);
+
+// ===== Floor =====
+const floorGeo = new THREE.CircleGeometry(15, 64);
+const floorMat = new THREE.MeshStandardMaterial({
+  color: 0x1a1b2e,
+  roughness: 0.8,
+  metalness: 0.2,
+});
+const floor = new THREE.Mesh(floorGeo, floorMat);
+floor.rotation.x = -Math.PI / 2;
+floor.receiveShadow = true;
+scene.add(floor);
+
+// Grid lines on floor
+const gridHelper = new THREE.GridHelper(30, 30, 0x2a2d4a, 0x1e2038);
+gridHelper.position.y = 0.01;
+scene.add(gridHelper);
+
+// ===== Build NIO ES9 (stylized model) =====
+// Dimensions: 5.365m L x 2.029m W x 1.870m H, wheelbase 3.25m
+const carGroup = new THREE.Group();
+
+// Body paint material (shared)
+const bodyMat = new THREE.MeshPhysicalMaterial({
+  color: CAR_COLORS.stellargreen.hex,
+  metalness: CAR_COLORS.stellargreen.metalness,
+  roughness: CAR_COLORS.stellargreen.roughness,
+  clearcoat: CAR_COLORS.stellargreen.clearcoat,
+  clearcoatRoughness: 0.05,
+  envMapIntensity: 1.2,
+});
+
+// --- Lower body (main hull) ---
+const lowerBodyGeo = new RoundedBoxGeometry(5.365, 0.75, 2.029, 6, 0.15);
+const lowerBody = new THREE.Mesh(lowerBodyGeo, bodyMat);
+lowerBody.position.y = 0.62;
+lowerBody.castShadow = true;
+lowerBody.receiveShadow = true;
+carGroup.add(lowerBody);
+
+// --- Hood (front section, slightly sloped) ---
+const hoodGeo = new RoundedBoxGeometry(1.6, 0.12, 1.9, 4, 0.06);
+const hood = new THREE.Mesh(hoodGeo, bodyMat);
+hood.position.set(-1.85, 1.02, 0);
+hood.rotation.z = 0.02;
+hood.castShadow = true;
+carGroup.add(hood);
+
+// --- Cabin / Greenhouse (upper section) ---
+// Main cabin box, slightly tapered
+const cabinGeo = new RoundedBoxGeometry(3.6, 0.65, 1.9, 6, 0.12);
+const cabin = new THREE.Mesh(cabinGeo, bodyMat);
+cabin.position.set(0.35, 1.35, 0);
+cabin.castShadow = true;
+carGroup.add(cabin);
+
+// --- Windshield (sloped) ---
+const windshieldGeo = new RoundedBoxGeometry(0.08, 0.62, 1.85, 3, 0.03);
+const glassMat = new THREE.MeshPhysicalMaterial({
+  color: 0x111520,
+  metalness: 0.9,
+  roughness: 0.05,
+  envMapIntensity: 1.5,
+});
+const windshield = new THREE.Mesh(windshieldGeo, glassMat);
+windshield.position.set(-1.45, 1.38, 0);
+windshield.rotation.z = 0.35;
+carGroup.add(windshield);
+
+// --- Rear window ---
+const rearWindowGeo = new RoundedBoxGeometry(0.08, 0.55, 1.85, 3, 0.03);
+const rearWindow = new THREE.Mesh(rearWindowGeo, glassMat);
+rearWindow.position.set(2.18, 1.38, 0);
+rearWindow.rotation.z = -0.15;
+carGroup.add(rearWindow);
+
+// --- Side windows (left & right) ---
+const sideWindowGeo = new RoundedBoxGeometry(3.2, 0.5, 0.05, 3, 0.02);
+const sideWindowL = new THREE.Mesh(sideWindowGeo, glassMat);
+sideWindowL.position.set(0.35, 1.38, 0.96);
+carGroup.add(sideWindowL);
+
+const sideWindowR = new THREE.Mesh(sideWindowGeo, glassMat);
+sideWindowR.position.set(0.35, 1.38, -0.96);
+carGroup.add(sideWindowR);
+
+// --- Panoramic roof ---
+const roofGeo = new RoundedBoxGeometry(3.0, 0.04, 1.75, 3, 0.02);
+const roof = new THREE.Mesh(roofGeo, glassMat);
+roof.position.set(0.35, 1.68, 0);
+carGroup.add(roof);
+
+// --- Front fascia details ---
+// Nose/grille area (dark)
+const grilleMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0c, roughness: 0.4, metalness: 0.6 });
+const grilleGeo = new RoundedBoxGeometry(0.1, 0.4, 1.6, 3, 0.04);
+const grille = new THREE.Mesh(grilleGeo, grilleMat);
+grille.position.set(-2.68, 0.72, 0);
+carGroup.add(grille);
+
+// Double-Dash DRL headlights (LED strips)
+const drlMat = new THREE.MeshStandardMaterial({
+  color: 0xffffff,
+  emissive: 0xffffff,
+  emissiveIntensity: 2.0,
+});
+// Left headlight DRL
+const drlGeo = new RoundedBoxGeometry(0.08, 0.06, 0.45, 3, 0.02);
+const drlL = new THREE.Mesh(drlGeo, drlMat);
+drlL.position.set(-2.69, 0.95, 0.55);
+carGroup.add(drlL);
+// Right headlight DRL
+const drlR = new THREE.Mesh(drlGeo, drlMat);
+drlR.position.set(-2.69, 0.95, -0.55);
+carGroup.add(drlR);
+
+// Front bumper lower
+const bumperMat = new THREE.MeshStandardMaterial({ color: 0x111114, roughness: 0.6, metalness: 0.3 });
+const frontBumperGeo = new RoundedBoxGeometry(0.15, 0.25, 1.9, 3, 0.05);
+const frontBumper = new THREE.Mesh(frontBumperGeo, bumperMat);
+frontBumper.position.set(-2.67, 0.38, 0);
+carGroup.add(frontBumper);
+
+// --- Rear details ---
+// Taillight bar (through-type)
+const taillightMat = new THREE.MeshStandardMaterial({
+  color: 0xff2030,
+  emissive: 0xff2030,
+  emissiveIntensity: 1.5,
+});
+const taillightGeo = new RoundedBoxGeometry(0.08, 0.08, 1.8, 3, 0.03);
+const taillight = new THREE.Mesh(taillightGeo, taillightMat);
+taillight.position.set(2.68, 1.0, 0);
+carGroup.add(taillight);
+
+// Rear bumper
+const rearBumperGeo = new RoundedBoxGeometry(0.15, 0.3, 1.9, 3, 0.05);
+const rearBumper = new THREE.Mesh(rearBumperGeo, bumperMat);
+rearBumper.position.set(2.67, 0.4, 0);
+carGroup.add(rearBumper);
+
+// --- Side trim / chrome strip ---
+const chromeMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9, roughness: 0.15 });
+const sideTrimGeo = new RoundedBoxGeometry(3.8, 0.04, 0.03, 2, 0.01);
+const sideTrimL = new THREE.Mesh(sideTrimGeo, chromeMat);
+sideTrimL.position.set(0, 1.05, 1.02);
+carGroup.add(sideTrimL);
+const sideTrimR = new THREE.Mesh(sideTrimGeo, chromeMat);
+sideTrimR.position.set(0, 1.05, -1.02);
+carGroup.add(sideTrimR);
+
+// --- Wheels ---
+const wheelRadius = 0.42;
+const wheelWidth = 0.3;
+const wheelPositions = [
+  { x: -1.55, z: 0.95 },   // front left
+  { x: -1.55, z: -0.95 },  // front right
+  { x: 1.65, z: 0.95 },    // rear left
+  { x: 1.65, z: -0.95 },   // rear right
+];
+
+const tireMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.9, metalness: 0.1 });
+const rimMat = new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.9, roughness: 0.25 });
+
+wheelPositions.forEach(pos => {
+  // Tire
+  const tireGeo = new THREE.CylinderGeometry(wheelRadius, wheelRadius, wheelWidth, 32);
+  const tire = new THREE.Mesh(tireGeo, tireMat);
+  tire.rotation.x = Math.PI / 2;
+  tire.position.set(pos.x, wheelRadius, pos.z);
+  tire.castShadow = true;
+  carGroup.add(tire);
+
+  // Rim
+  const rimGeo = new THREE.CylinderGeometry(wheelRadius * 0.65, wheelRadius * 0.65, wheelWidth + 0.02, 12);
+  const rim = new THREE.Mesh(rimGeo, rimMat);
+  rim.rotation.x = Math.PI / 2;
+  rim.position.set(pos.x, wheelRadius, pos.z);
+  carGroup.add(rim);
+
+  // Rim spokes
+  for (let i = 0; i < 5; i++) {
+    const spokeGeo = new THREE.BoxGeometry(wheelRadius * 0.5, 0.04, 0.04);
+    const spoke = new THREE.Mesh(spokeGeo, rimMat);
+    const angle = (i / 5) * Math.PI * 2;
+    spoke.position.set(
+      pos.x + Math.cos(angle) * wheelRadius * 0.25,
+      wheelRadius + Math.sin(angle) * wheelRadius * 0.25,
+      pos.z + (pos.z > 0 ? wheelWidth / 2 + 0.01 : -wheelWidth / 2 - 0.01)
+    );
+    spoke.rotation.z = angle;
+    carGroup.add(spoke);
+  }
+});
+
+// --- Side mirrors ---
+const mirrorGeo = new RoundedBoxGeometry(0.15, 0.1, 0.25, 3, 0.04);
+const mirrorL = new THREE.Mesh(mirrorGeo, bodyMat);
+mirrorL.position.set(-1.2, 1.35, 1.1);
+carGroup.add(mirrorL);
+const mirrorR = new THREE.Mesh(mirrorGeo, bodyMat);
+mirrorR.position.set(-1.2, 1.35, -1.1);
+carGroup.add(mirrorR);
+
+// --- NIO badge (front) ---
+const badgeGeo = new THREE.CircleGeometry(0.08, 32);
+const badgeMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 1.0, roughness: 0.2 });
+const frontBadge = new THREE.Mesh(badgeGeo, badgeMat);
+frontBadge.position.set(-2.70, 0.82, 0);
+frontBadge.rotation.y = -Math.PI / 2;
+carGroup.add(frontBadge);
+
+// --- Sticker (Duffy and Friends) ---
+const textureLoader = new THREE.TextureLoader();
+const stickerTexture = textureLoader.load('sticker.png');
+stickerTexture.colorSpace = THREE.SRGBColorSpace;
+
+const stickerMat = new THREE.MeshStandardMaterial({
+  map: stickerTexture,
+  transparent: true,
+  roughness: 0.5,
+  metalness: 0.0,
+  polygonOffset: true,
+  polygonOffsetFactor: -1,
+});
+
+// Sticker plane (width x height = 1.58m x 0.71m aspect ratio from image)
+const stickerW = 0.9;
+const stickerH = stickerW * (710 / 1580);
+const stickerGeo = new THREE.PlaneGeometry(stickerW, stickerH);
+const sticker = new THREE.Mesh(stickerGeo, stickerMat);
+carGroup.add(sticker);
+
+// Sticker positions
+const stickerPositions = {
+  rear: { pos: [2.69, 0.85, 0], rot: [0, -Math.PI / 2, 0], w: 0.85 },
+  hood: { pos: [-1.85, 1.095, 0], rot: [-Math.PI / 2, 0, 0], w: 0.7 },
+  left: { pos: [0.2, 0.85, 1.02], rot: [0, 0, 0], w: 0.75 },
+  right: { pos: [0.2, 0.85, -1.02], rot: [0, Math.PI, 0], w: 0.75 },
+};
+
+function setStickerPosition(positionKey) {
+  if (positionKey === 'none') {
+    sticker.visible = false;
+    return;
+  }
+  const p = stickerPositions[positionKey];
+  if (!p) return;
+  sticker.visible = true;
+  sticker.position.set(p.pos[0], p.pos[1], p.pos[2]);
+  sticker.rotation.set(p.rot[0], p.rot[1], p.rot[2]);
+  // Adjust size based on position
+  sticker.scale.set(p.w / stickerW, (p.w * 710 / 1580) / stickerH, 1);
+}
+
+setStickerPosition('rear');
+scene.add(carGroup);
+
+// ===== UI Controls =====
+const colorSelect = document.getElementById('colorSelect');
+const stickerSelect = document.getElementById('stickerSelect');
+const autoRotateCheck = document.getElementById('autoRotate');
+const colorNameDisplay = document.getElementById('colorName');
+const swatchesContainer = document.getElementById('swatches');
+
+// Create color swatches
+Object.entries(CAR_COLORS).forEach(([key, val]) => {
+  const sw = document.createElement('div');
+  sw.className = 'swatch';
+  sw.style.background = `#${val.hex.toString(16).padStart(6, '0')}`;
+  sw.title = val.name;
+  sw.dataset.color = key;
+  sw.addEventListener('click', () => {
+    colorSelect.value = key;
+    updateCarColor(key);
+  });
+  swatchesContainer.appendChild(sw);
+});
+
+function updateCarColor(key) {
+  const c = CAR_COLORS[key];
+  if (!c) return;
+  bodyMat.color.setHex(c.hex);
+  bodyMat.metalness = c.metalness;
+  bodyMat.roughness = c.roughness;
+  bodyMat.clearcoat = c.clearcoat;
+  colorNameDisplay.textContent = c.name;
+  // Update active swatch
+  document.querySelectorAll('.swatch').forEach(s => {
+    s.classList.toggle('active', s.dataset.color === key);
+  });
+}
+
+colorSelect.addEventListener('change', (e) => updateCarColor(e.target.value));
+stickerSelect.addEventListener('change', (e) => setStickerPosition(e.target.value));
+autoRotateCheck.addEventListener('change', (e) => {
+  controls.autoRotate = e.target.checked;
+});
+
+// Set initial active
+updateCarColor('stellargreen');
+
+// ===== Resize =====
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ===== Animation Loop =====
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
