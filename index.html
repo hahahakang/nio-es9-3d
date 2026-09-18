@@ -99,7 +99,7 @@ controls.autoRotate=true;controls.autoRotateSpeed=1.5;controls.enablePan=false;
 const dl=new THREE.DirectionalLight(0xffffff,3);dl.position.set(5,8,4);dl.castShadow=true;
 dl.shadow.mapSize.set(2048,2048);dl.shadow.camera.left=-5;dl.shadow.camera.right=5;
 dl.shadow.camera.top=5;dl.shadow.camera.bottom=-5;scene.add(dl);
-scene.add(new THREE.DirectionalLight(0x8899bb,.8)).position.set(-5,3,-5);
+const fl2=new THREE.DirectionalLight(0x8899bb,.8);fl2.position.set(-5,3,-5);scene.add(fl2);
 const rl=new THREE.DirectionalLight(0xffffff,1.5);rl.position.set(0,5,-8);scene.add(rl);
 scene.add(new THREE.AmbientLight(0x303040,.6));
 
