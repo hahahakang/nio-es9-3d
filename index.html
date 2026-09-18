@@ -150,6 +150,7 @@ loader.load('es9.glb',(gltf)=>{
   child.castShadow=true;child.receiveShadow=true;
   // Find material by node/mesh name
   let name=(child.name||'').toLowerCase();
+  if(name.includes('caliper')){child.visible=false;return;}
   let assigned=false;
   for(const[key,mat]of Object.entries(matMap)){
    if(name.includes(key)){child.material=mat;assigned=true;break;}
