@@ -109,7 +109,7 @@ const floor=new THREE.Mesh(new THREE.CircleGeometry(30,64),
 floor.rotation.x=-Math.PI/2;floor.position.y=-0.02;floor.receiveShadow=true;scene.add(floor);
 
 // Materials
-const paintMat=new THREE.MeshPhysicalMaterial({color:COLORS.green.h,metalness:.8,roughness:.18,clearcoat:1,clearcoatRoughness:.03,envMapIntensity:1.3,side:THREE.DoubleSide});
+const paintMat=new THREE.MeshPhysicalMaterial({color:COLORS.green.h,metalness:.45,roughness:.28,clearcoat:1,clearcoatRoughness:.06,envMapIntensity:.9,side:THREE.DoubleSide});
 const blackMat=new THREE.MeshStandardMaterial({color:0x0a0a0c,roughness:.7,metalness:.2,side:THREE.DoubleSide});
 const chromeMat=new THREE.MeshStandardMaterial({color:0xd0d0d0,metalness:1,roughness:.12,side:THREE.DoubleSide});
 const glassMat=new THREE.MeshPhysicalMaterial({color:0x0c1018,metalness:.9,roughness:.05,envMapIntensity:2,transparent:true,opacity:.75,side:THREE.DoubleSide});
