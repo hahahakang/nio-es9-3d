@@ -314,33 +314,6 @@ addEventListener('orientationchange',()=>setTimeout(onResize,200));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(onResize,50);});
 
 (function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);})();
-
-// TEMP color calibration debug hook (?debug=1)
-if(location.search.includes('debug=1')){
- window.__car={
-  setColor(k){if(COLORS[k])paintMat.color.setHex(COLORS[k].h);},
-  sample(x,y,w,h){
-   renderer.render(scene,camera);const gl=renderer.getContext();
-   const pr=renderer.getPixelRatio(),BH=innerHeight*pr;
-   [x,y,w,h]=[x*pr,y*pr,w*pr,h*pr].map(v=>Math.round(v));
-   const buf=new Uint8Array(w*h*4);
-   gl.readPixels(x,BH-y-h,w,h,gl.RGBA,gl.UNSIGNED_BYTE,buf);
-   let pts=[];
-   for(let i=0;i<buf.length;i+=4){
-    const r=buf[i],g=buf[i+1],b=buf[i+2];const L=.2126*r+.7152*g+.0722*b;
-    const mx=Math.max(r,g,b),mn=Math.min(r,g,b);
-    if(L>228&&(mx-mn)<14)continue;   // light background
-    if(L<16)continue;                // near-black glass/gaps
-    pts.push([r,g,b,L]);
-   }
-   pts.sort((a,b)=>a[3]-b[3]);
-   const avg=arr=>{const n=arr.length;return [Math.round(arr.reduce((s,p)=>s+p[0],0)/n),Math.round(arr.reduce((s,p)=>s+p[1],0)/n),Math.round(arr.reduce((s,p)=>s+p[2],0)/n)];};
-   const lit=avg(pts.slice(Math.floor(pts.length*.55)));
-   const mid=avg(pts.slice(Math.floor(pts.length*.30),Math.floor(pts.length*.55)));
-   return {lit,mid,n:pts.length};
-  }
- };
-}
 </script>
 </body>
 </html>
