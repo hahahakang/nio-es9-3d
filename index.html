@@ -90,8 +90,8 @@ import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
 const COLORS={
- green:{n:'星辰绿',h:0x3d4747},silver:{n:'月辉银',h:0x9fa1a6},white:{n:'云白',h:0xe9ebed},
- black:{n:'极夜黑',h:0x404244},gold:{n:'晨晖金',h:0xccb395},red:{n:'M42 星云红',h:0x522f35},blue:{n:'南极星蓝',h:0x464d61}
+ green:{n:'星辰绿',h:0x404c4c},silver:{n:'月辉银',h:0x949699},white:{n:'云白',h:0xe0e2e3},
+ black:{n:'极夜黑',h:0x434345},gold:{n:'晨晖金',h:0xccb395},red:{n:'M42 星云红',h:0x5c373c},blue:{n:'南极星蓝',h:0x4a5266}
 };
 
 const container=document.getElementById('c');
@@ -121,9 +121,9 @@ const dl=new THREE.DirectionalLight(0xffffff,1.85);dl.position.set(5,8,4);dl.cas
 dl.shadow.mapSize.set(2048,2048);dl.shadow.camera.left=-5;dl.shadow.camera.right=5;
 dl.shadow.camera.top=5;dl.shadow.camera.bottom=-5;
 dl.shadow.bias=-0.0004;scene.add(dl);
-const fl2=new THREE.DirectionalLight(0xdde4f0,.85);fl2.position.set(-5,3,-5);scene.add(fl2);
+const fl2=new THREE.DirectionalLight(0xdde4f0,.95);fl2.position.set(-5,3,-5);scene.add(fl2);
 const rl=new THREE.DirectionalLight(0xffffff,1.0);rl.position.set(0,5,-8);scene.add(rl);
-scene.add(new THREE.AmbientLight(0xffffff,.7));
+scene.add(new THREE.AmbientLight(0xffffff,.8));
 
 const floor=new THREE.Mesh(new THREE.CircleGeometry(30,64),
  new THREE.MeshStandardMaterial({color:0xe9ebed,roughness:.95,metalness:0}));
