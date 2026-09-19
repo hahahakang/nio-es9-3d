@@ -91,7 +91,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
 const COLORS={
  green:{n:'星辰绿',h:0x344443},silver:{n:'月辉银',h:0xb4b6ba},white:{n:'云白',h:0xf6f6f4},
- black:{n:'极夜黑',h:0x303032},gold:{n:'晨晖金',h:0xd8c8b4},red:{n:'M42星云红',h:0x60222b},blue:{n:'南极星蓝',h:0x424b68}
+ black:{n:'极夜黑',h:0x303032},gold:{n:'晨晖金',h:0xd8c8b4},red:{n:'M42 星云红',h:0x60222b},blue:{n:'南极星蓝',h:0x424b68}
 };
 
 const container=document.getElementById('c');
@@ -278,7 +278,7 @@ arEl.onclick=()=>{arEl.classList.toggle('on');controls.autoRotate=arEl.classList
 // Bottom panel: drag handle down to hide (fullscreen), up to reveal; tap toggles; fab reopens
 const cp=document.getElementById('cp'),ph=document.getElementById('ph'),fab=document.getElementById('fab');
 function setPanel(open){cp.classList.toggle('off',!open);fab.classList.toggle('show',!open);}
-let dragY=null,startOpen=true,moved=false;
+let dragY=null,startOpen=true,moved=false,suppressClick=false;
 ph.addEventListener('pointerdown',e=>{
  dragY=e.clientY;startOpen=!cp.classList.contains('off');moved=false;
  cp.style.transition='none';try{ph.setPointerCapture(e.pointerId);}catch(_){}
@@ -293,14 +293,16 @@ ph.addEventListener('pointermove',e=>{
 function endDrag(e){
  if(dragY===null)return;const dy=e.clientY-dragY;
  cp.style.transition='';cp.style.transform='';
- if(!moved){setPanel(!startOpen);}
- else if(dy>55){setPanel(false);}
- else if(dy<-55){setPanel(true);}
- else{setPanel(startOpen);}
+ if(moved){
+  suppressClick=true;setTimeout(()=>suppressClick=false,350);
+  if(dy>55)setPanel(false);else if(dy<-55)setPanel(true);else setPanel(startOpen);
+ }
  dragY=null;
 }
 ph.addEventListener('pointerup',endDrag);
 ph.addEventListener('pointercancel',endDrag);
+// simple tap (mouse or touch without drag) toggles the panel
+ph.addEventListener('click',()=>{if(suppressClick)return;setPanel(cp.classList.contains('off'));});
 fab.addEventListener('click',()=>setPanel(true));
 
 function onResize(){
@@ -312,6 +314,23 @@ addEventListener('orientationchange',()=>setTimeout(onResize,200));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(onResize,50);});
 
 (function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);})();
+
+// TEMP color calibration debug hook (?debug=1)
+if(location.search.includes('debug=1')){
+ window.__car={
+  setColor(k){if(COLORS[k])paintMat.color.setHex(COLORS[k].h);},
+  sample(x,y,w,h){
+   renderer.render(scene,camera);const gl=renderer.getContext();
+   const buf=new Uint8Array(w*h*4);
+   gl.readPixels(x,innerHeight-y-h,w,h,gl.RGBA,gl.UNSIGNED_BYTE,buf);
+   const pts=[];
+   for(let i=0;i<buf.length;i+=4){pts.push([buf[i],buf[i+1],buf[i+2]]);}
+   const med=q=>{pts.sort((a,b)=>a[q]-b[q]);return pts[Math.floor(pts.length/2)][q];};
+   const lum=pts.map(p=>.2126*p[0]+.7152*p[1]+.0722*p[2]).sort((a,b)=>a-b);
+   return {r:med(0),g:med(1),b:med(2),vlo:lum[Math.floor(lum.length*.2)],vhi:lum[Math.floor(lum.length*.85)]};
+  }
+ };
+}
 </script>
 </body>
 </html>
