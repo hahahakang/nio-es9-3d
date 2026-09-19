@@ -321,8 +321,10 @@ if(location.search.includes('debug=1')){
   setColor(k){if(COLORS[k])paintMat.color.setHex(COLORS[k].h);},
   sample(x,y,w,h){
    renderer.render(scene,camera);const gl=renderer.getContext();
+   const pr=renderer.getPixelRatio(),BH=innerHeight*pr;
+   [x,y,w,h]=[x*pr,y*pr,w*pr,h*pr].map(v=>Math.round(v));
    const buf=new Uint8Array(w*h*4);
-   gl.readPixels(x,innerHeight-y-h,w,h,gl.RGBA,gl.UNSIGNED_BYTE,buf);
+   gl.readPixels(x,BH-y-h,w,h,gl.RGBA,gl.UNSIGNED_BYTE,buf);
    const pts=[];
    for(let i=0;i<buf.length;i+=4){pts.push([buf[i],buf[i+1],buf[i+2]]);}
    const med=q=>{pts.sort((a,b)=>a[q]-b[q]);return pts[Math.floor(pts.length/2)][q];};
